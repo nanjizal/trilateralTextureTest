@@ -15,7 +15,7 @@ import js.html.StyleElement;
 import js.html.ImageElement;
 import js.html.Image;
 import HaxeLogo;
-import geom.Matrix4x3;
+import geom.matrix.Matrix4x3;
 import trilateral.tri.*;
 import trilateral.geom.*;
 import trilateral.path.*;
@@ -76,9 +76,15 @@ class Test {
     var indices = new Array<Int>();
     var scale:                  Float;
     var theta = 0.0; // Angle in radians
-    var modelViewProjection = Matrix4x3.unit(); // external matrix controlling global 3d position
-    var matrix32Array = new Float32Array( ident() ); // internal matrix passed to shader
+    var modelViewProjection = Matrix4x3.unit; // external matrix controlling global 3d position
+    var matrix32Array = new haxe.io.Float32Array( 16 );//ident() ); // internal matrix passed to shader
+    
     public function new(){
+        var arr = matrix32Array;
+        arr[ 0 ]  = 1.; arr[ 1 ]  = 0.; arr[ 2 ]  = 0.; arr[ 3 ]  = 0.;
+        arr[ 4 ]  = 0.; arr[ 5 ]  = 1.; arr[ 6 ]  = 0.; arr[ 7 ]  = 0.;
+        arr[ 8 ]  = 0.; arr[ 9 ]  = 0.; arr[ 10 ] = 1.; arr[ 11 ] = 0.;
+        arr[ 12 ] = 0.; arr[ 13 ] = 0.; arr[ 14 ] = 0.; arr[ 15 ] = 1.;
         gl = createWebGl( width, height );
         scale = 1/(width/2);
         triangles = new TriangleArray();
@@ -117,7 +123,7 @@ class Test {
     // called every frame, sets transform and redraws
     function render_(i: Int ):Void{
         // we can multiply two rotations to get an interesting movement of the static 2D triangles.
-        modelViewProjection = Matrix4x3.unit();
+        modelViewProjection = Matrix4x3.unit;
         modelViewProjection = Matrix4x3.radianZ( theta += Math.PI/200 ) * Matrix4x3.radianY( theta ); // Remove this line to stop 3D rotation
         render();
     }
@@ -224,8 +230,8 @@ class Test {
         gl.viewport( 0, 0, canvas.width, canvas.height );
         // apply transform matrices 
         var modelViewProjectionID = gl.getUniformLocation( program, 'modelViewProjection' );
-        matrix32Array = modelViewProjection.toFloat32Array( matrix32Array );
-        gl.uniformMatrix4fv( modelViewProjectionID, false, matrix32Array );
+        matrix32Array = modelViewProjection.updateWebGL_( matrix32Array );
+        gl.uniformMatrix4fv( modelViewProjectionID, false, untyped matrix32Array );
         // draw
         gl.drawArrays( RenderingContext.TRIANGLES, 0, indices.length );
     }

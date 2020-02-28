@@ -1,4 +1,5 @@
 package;
+
 #if (haxe_ver < 4.0 )
 import js.html.Float32Array;
 #else
@@ -15,9 +16,9 @@ import js.html.StyleElement;
 import js.html.ImageElement;
 import js.html.Image;
 import HaxeLogo;
-import geom.Matrix4x3;
 import trilateral.tri.*;
 import trilateral.geom.*;
+import geom.matrix.Matrix4x3;
 import trilateral.path.*;
 import trilateral.justPath.*;
 import trilateral.angle.*;
